@@ -3,5 +3,4 @@ export default function getRandomNumber(): void {
   console.log(randomNum);
 }
 
-// Call the function to log the random number
 getRandomNumber();

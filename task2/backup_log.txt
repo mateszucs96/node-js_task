@@ -1,0 +1,30 @@
+2025-01-30T20:19:51.689Z: FAILED: tar command execution error: Command failed: tar -czf "src/backup/backup-2025-01-30T20-19-51-000Z.tar.gz" -C "src" .
+tar: ./backup: file changed as we read it
+
+2025-01-30T20:20:57.935Z: SUCCESS: Backup created at src/backup/backup-2025-01-30T20-20-57-000Z.tar.gz, HASH: 6e24fa4e0952e772735ffb66517f8f26a16c5814b06ec5b087fd5c9e2095f678
+2025-01-30T20:21:07.593Z: SUCCESS: Backup created at src/backup/backup-2025-01-30T20-21-07-000Z.tar.gz, HASH: 6e24fa4e0952e772735ffb66517f8f26a16c5814b06ec5b087fd5c9e2095f678
+2025-01-30T20:21:38.726Z: SUCCESS: Backup created at src/backup/backup-2025-01-30T20-21-38-000Z.tar.gz, HASH: 6e24fa4e0952e772735ffb66517f8f26a16c5814b06ec5b087fd5c9e2095f678
+2025-01-30T20:22:07.496Z: SUCCESS: Backup created at src/backup/backup-2025-01-30T20-22-07-000Z.tar.gz, HASH: 6e24fa4e0952e772735ffb66517f8f26a16c5814b06ec5b087fd5c9e2095f678
+2025-01-30T20:26:25.520Z: SUCCESS: Backup created at src/backup/backup-2025-01-30T20-26-25-000Z.tar.gz, HASH: ca6c043e6bdb24dfa31de791054143732fcedda93e2c5b2b4307af9754be76d0
+2025-01-30T20:26:37.252Z: SUCCESS: Backup created at src/backup/backup-2025-01-30T20-26-37-000Z.tar.gz, HASH: 6e24fa4e0952e772735ffb66517f8f26a16c5814b06ec5b087fd5c9e2095f678
+2025-01-30T20:56:29.446Z: FAILED: tar command execution error: Command failed: tar -czf "src/backup/backup-2025-01-30T20-56-29-000Z.tar.gz" -C "src" .
+tar: ./backup: file changed as we read it
+
+2025-01-30T20:56:38.007Z: FAILED: tar command execution error: Command failed: tar -czf "src/backup/backup-2025-01-30T20-56-37-000Z.tar.gz" -C "src" .
+tar: ./backup/backup-2025-01-30T20-56-37-000Z.tar.gz: file changed as we read it
+tar: ./backup: file changed as we read it
+
+2025-01-30T20:57:02.699Z: FAILED: tar command execution error: Command failed: tar -czf "src/backup/backup-2025-01-30T20-57-02-000Z.tar.gz" -C "src" .
+tar: ./backup: file changed as we read it
+
+2025-01-31T00:31:19.084Z: FAILED: tar command execution error: Command failed: tar -czf "src/backup/backup-2025-01-31T00-31-18-000Z.tar.gz" -C "src" .
+tar: ./backup: file changed as we read it
+
+2025-01-31T00:31:36.775Z: FAILED: tar command execution error: Command failed: tar -czf "src/backup/backup-2025-01-31T00-31-36-000Z.tar.gz" -C "src" .
+tar: ./backup: file changed as we read it
+
+2025-01-31T00:32:11.699Z: SUCCESS: Backup created at src/backup/backup-2025-01-31T00-32-11-000Z.tar.gz, HASH: a1e74805515b8c91fa2e51994ac5a3c58de317c55cbc5cd052820ee610aaec00
+2025-01-31T00:34:16.283Z: SUCCESS: Backup created at src/backup/backup-2025-01-31T00-34-16-000Z.tar.gz, HASH: a1e74805515b8c91fa2e51994ac5a3c58de317c55cbc5cd052820ee610aaec00
+2025-01-31T00:37:46.224Z: SUCCESS: Backup created at src/backup/backup-2025-01-31T00-37-46-000Z.tar.gz, HASH: a1e74805515b8c91fa2e51994ac5a3c58de317c55cbc5cd052820ee610aaec00
+2025-01-31T00:40:23.489Z: SUCCESS: Backup created at src/backup/backup-2025-01-31T00-40-23-000Z.tar.gz, HASH: a1e74805515b8c91fa2e51994ac5a3c58de317c55cbc5cd052820ee610aaec00
+2025-01-31T00:41:44.681Z: SUCCESS: Backup created at src/backup/backup-2025-01-31T00-41-44-000Z.tar.gz, HASH: a1e74805515b8c91fa2e51994ac5a3c58de317c55cbc5cd052820ee610aaec00

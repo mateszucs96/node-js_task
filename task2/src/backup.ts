@@ -5,6 +5,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import { promisify } from 'util';
+import { appendFile } from 'fs';
 
 const promisifiedExec = promisify(exec); // async version of exec function, should be used to run tar command
 const logFilePath: string = 'backup_log.txt'; // the log file where backup hashes are stored, do not change
@@ -15,9 +16,26 @@ const logFilePath: string = 'backup_log.txt'; // the log file where backup hashe
  * @param {string} str - The input string from which to generate the checksum (UTF8 encoding).
  * @returns {Promise<string>} A promise that resolves with the calculated checksum (HEX string).
  */
-export const calculateDirectoryChecksum = async (str: string): Promise<string> =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  crypto.createHash('sha256').update(str, 'utf8').digest('hex');
+export const calculateDirectoryChecksum = async (str: string): Promise<string> => {
+  const items = await fs.readdir(str);
+  const filteredItems = await Promise.all(
+    items.map(async (item) => {
+      const itemPath = path.join(str, item);
+      try {
+        const stats = await fs.stat(itemPath);
+        return stats.isFile() || stats.isDirectory() ? item : null;
+      } catch (err) {
+        console.warn(`Warning: Could not access ${itemPath} - ${err}`);
+        return null;
+      }
+    }),
+  );
+
+  const sortedItems = filteredItems.filter(Boolean).sort();
+
+  return crypto.createHash('sha256').update(sortedItems.join(',')).digest('hex');
+};
+// eslint-disable-next-line implicit-arrow-linebreak
 
 /**
  * Retrieves the most recent backup hash from a log file.
@@ -50,61 +68,48 @@ export const getLastBackupHash = async (logPath: string): Promise<string | null>
  * @returns {Promise<void>} A promise that resolves when the archive has been successfully created.
  */
 export const createArchive = async (sourceDir: string, destinationDir: string): Promise<void> => {
-  const items = await fs.readdir(sourceDir);
-  console.log(items);
-  const filteredItems = await Promise.all(
-    items.map(async (item) => {
-      const itemPath = path.join(sourceDir, item);
-      const stats = await fs.stat(itemPath);
-      return stats.isFile() || stats.isDirectory() ? item : null;
-    }),
-  );
+  const timestamp = new Date()
+    .toISOString()
+    .replace(/[:]/g, '-')
+    .replace(/\..*Z$/, '-000Z');
 
   try {
-    const currentHash = await calculateDirectoryChecksum(filteredItems.toString());
-    const lastHash = await getLastBackupHash(logFilePath);
+    const backupFilePath = path.posix.join(destinationDir, `backup-${timestamp}.tar.gz`);
 
-    if (currentHash === lastHash) {
-      console.log('No changes detected. Skipping backup.');
-      return;
-    }
-
-    const timestamp = new Date().toISOString().replace(/[:]/g, '-');
-    const backupFilePath = path.join(destinationDir, `backup-${timestamp}.tar.gz`);
+    // **2. Backup Execution**
     const command = `tar -czf "${backupFilePath}" -C "${sourceDir}" .`;
+    // Execute tar command
+    const { stdout, stderr } = await promisifiedExec(command);
 
-    try {
-      const { stdout, stderr } = await promisifiedExec(command);
-
-      if (stderr) {
-        console.error(`Backup stderr: ${stderr}`);
-      }
-
-      console.log(`Backup created successfully: ${backupFilePath}`);
-      console.log(stdout);
-
-      // Log success
-      const logMessage = `${new Date().toISOString()}: SUCCESS: Backup created at ${backupFilePath}, HASH: ${currentHash}\n`;
-      await fs.appendFile(logFilePath, logMessage);
-    } catch (error) {
-      console.error(`Error executing tar command: ${(error as Error).message}`);
-
-      // Log failure
-      const logMessage = `${new Date().toISOString()}: FAILED: tar command failed\n`;
-      await fs.appendFile(logFilePath, logMessage);
+    // Check if stderr contains errors
+    if (stderr) {
+      console.error(`Backup failed with stderr: ${stderr}`);
+      const errorMessage = `${new Date().toISOString()}: FAILED: tar command failed, STDERR: ${stderr}\n`;
+      await fs.appendFile(logFilePath, errorMessage);
+      return; // Exit early due to tar failure
     }
+
+    console.log(`Backup created successfully: ${backupFilePath}`);
+    console.log(stdout);
+
+    // **3. Checksum and Logging**
+    const currentHash = await calculateDirectoryChecksum(sourceDir);
+    const logMessage = `${new Date().toISOString()}: SUCCESS: Backup created at ${backupFilePath}, HASH: ${currentHash}\n`;
+    await fs.appendFile(logFilePath, logMessage);
   } catch (error) {
-    console.error(`Error creating backup: ${(error as Error).message}`);
+    // Handle exec errors
+
+    await fs.appendFile(logFilePath, `${timestamp}: FAILED: tar command failed\n`);
+    throw new Error(`Failed to create backup, error = ${(error as Error).message}`);
   }
-
-  // **3. Checksum and Logging**
-
-  //    - Reads the content of the source directory using `fs.readDir()` function (first level only, no nested subdirectories)
-  //    - Calculates a checksum of the source directory content using `calculateDirectoryChecksum()` function
-  //    - Appends the result of tar creation into the log file (using `fs.appendFile()` file):
-  //      - On success: `YYYY-MM-DDTHH-MM-SS-SSSZ: SUCCESS: Backup created at /output-path/backup-2020-01-01T00-00-00-000Z.tar.gz, HASH: {hash}\n`
-  //      - On error: - `YYYY-MM-DDTHH-MM-SS-SSSZ: FAILED: tar command failed\n`
 };
+// **3. Checksum and Logging**
+
+//    - Reads the content of the source directory using `fs.readDir()` function (first level only, no nested subdirectories)
+//    - Calculates a checksum of the source directory content using `calculateDirectoryChecksum()` function
+//    - Appends the result of tar creation into the log file (using `fs.appendFile()` file):
+//      - On success: `YYYY-MM-DDTHH-MM-SS-SSSZ: SUCCESS: Backup created at /output-path/backup-2020-01-01T00-00-00-000Z.tar.gz, HASH: {hash}\n`
+//      - On error: - `YYYY-MM-DDTHH-MM-SS-SSSZ: FAILED: tar command failed\n`
 
 /**
  * Executes the backup process by checking the checksum of the current directory against the last backup.
@@ -117,7 +122,6 @@ export const createArchive = async (sourceDir: string, destinationDir: string): 
  *                          either by creating a new backup or skipping the process.
  */
 export const runBackup = async (sourceDir: string, destinationDir: string): Promise<void> => {
-  createArchive(sourceDir, destinationDir);
   // 1. **Directory Content Retrieval:**
   //     - Fetches the content of the source directory using `fs.readdir()` (list of files/folders, only at the top level, excluding subdirectories)
   //     - Calculates the checksum of the content by invoking `calculateDirectoryChecksum()` function

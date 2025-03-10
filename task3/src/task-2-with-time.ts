@@ -16,7 +16,19 @@ export class WithTime extends EventEmitter {
    * This function should accept a callback as its last argument.
    * @param {...any[]} args - The arguments to be passed to the asyncFunc, excluding the callback.
    */
-  execute(asyncFunc: AsyncFunction, ...args: any[]): void {
-    // implementation here
+  execute(asyncFunc: AsyncFunction, ...args: [string, ...any[]]): void {
+    this.emit('begin');
+    console.time('executionTime');
+    asyncFunc(...args, (error: Error | null, data?: any) => {
+      console.timeEnd('executionTime');
+
+      if (error) {
+        this.emit('error', error);
+      } else {
+        this.emit('data', data);
+      }
+
+      this.emit('end');
+    });
   }
 }

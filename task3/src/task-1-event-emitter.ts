@@ -52,7 +52,9 @@ export class EventEmitter {
    * @returns {EventEmitter} - EventEmitter instance.
    */
   removeListener(eventName: string, fn: EventListener): this {
-    this.listeners[eventName] = this.listeners[eventName].filter((listener) => listener !== fn);
+    if (this.listeners[eventName]) {
+      this.listeners[eventName] = this.listeners[eventName].filter((listener) => listener !== fn);
+    }
     return this;
   }
 
@@ -87,7 +89,8 @@ export class EventEmitter {
    * @returns {number} - The number of listeners for the event.
    */
   listenerCount(eventName: string): number {
-    return this.listeners[eventName].length;
+    let listeners = this.listeners[eventName] || [];
+    return listeners.length;
   }
 
   /**
@@ -96,6 +99,6 @@ export class EventEmitter {
    * @returns {EventListener[]} - An array of listener functions for the event.
    */
   rawListeners(eventName: string): EventListener[] {
-    return this.listeners[eventName];
+    return this.listeners[eventName] || [];
   }
 }

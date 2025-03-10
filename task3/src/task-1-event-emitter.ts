@@ -74,8 +74,11 @@ export class EventEmitter {
    * @returns {boolean} - True if the event had listeners, false otherwise.
    */
   emit(eventName: string, ...args: any[]): boolean {
-    // implementation here
-    return true; // should be changed
+    if (this.listeners[eventName]) {
+      this.listeners[eventName].forEach((listener) => listener(...args));
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -84,8 +87,7 @@ export class EventEmitter {
    * @returns {number} - The number of listeners for the event.
    */
   listenerCount(eventName: string): number {
-    // implementation here
-    return 0; // should be changed
+    return this.listeners[eventName].length;
   }
 
   /**
@@ -94,7 +96,6 @@ export class EventEmitter {
    * @returns {EventListener[]} - An array of listener functions for the event.
    */
   rawListeners(eventName: string): EventListener[] {
-    // implementation here
-    return []; // should be changed
+    return this.listeners[eventName];
   }
 }

@@ -28,8 +28,7 @@ export class EventEmitter {
    * @returns {EventEmitter} - Current EventEmitter instance.
    */
   on(eventName: string, fn: EventListener): this {
-    // implementation here
-    return this;
+    return this.addListener(eventName, fn);
   }
 
   /**
@@ -39,8 +38,11 @@ export class EventEmitter {
    * @returns {EventEmitter} - EventEmitter instance.
    */
   once(eventName: string, fn: EventListener): this {
-    // implementation here
-    return this;
+    const wrapperForOnce = (...args: any[]) => {
+      fn(...args);
+      this.removeListener(eventName, wrapperForOnce);
+    };
+    return this.addListener(eventName, wrapperForOnce);
   }
 
   /**
@@ -50,7 +52,7 @@ export class EventEmitter {
    * @returns {EventEmitter} - EventEmitter instance.
    */
   removeListener(eventName: string, fn: EventListener): this {
-    // implementation here
+    this.listeners[eventName] = this.listeners[eventName].filter((listener) => listener !== fn);
     return this;
   }
 
@@ -61,8 +63,7 @@ export class EventEmitter {
    * @returns {EventEmitter} - EventEmitter instance.
    */
   off(eventName: string, fn: EventListener): this {
-    // implementation here
-    return this;
+    return this.removeListener(eventName, fn);
   }
 
   /**

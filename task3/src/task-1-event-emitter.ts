@@ -14,7 +14,10 @@ export class EventEmitter {
    * @returns {EventEmitter} - EventEmitter instance.
    */
   addListener(eventName: string, fn: EventListener): this {
-    // implementation here
+    if (!this.listeners[eventName]) this.listeners[eventName] = [];
+
+    this.listeners[eventName].push(fn);
+
     return this;
   }
 

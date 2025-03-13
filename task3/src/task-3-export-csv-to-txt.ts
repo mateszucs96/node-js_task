@@ -8,8 +8,41 @@
  * @param {string} txtPath - The path to the destination TXT file.
  * @returns {Promise<boolean>} - A promise that resolves to true when export is done.
  */
-export const exportCsvToTxt = (csvPath: string, txtPath: string): Promise<boolean> => {
-  // implementation here
-  console.log(`csvPath = ${csvPath}, txtPath = ${txtPath}`);
-  return Promise.resolve(true); // should be changed
-};
+import * as fs from 'fs';
+import csv from 'csvtojson';
+
+export const exportCsvToTxt = (csvPath: string, txtPath: string): Promise<boolean> =>
+  // eslint-disable-next-line implicit-arrow-linebreak
+  new Promise((resolve, reject) => {
+    const readStream = fs.createReadStream(csvPath);
+    const writeStream = fs.createWriteStream(txtPath);
+
+    writeStream.on('error', (err) => {
+      reject(new Error(`Failed to write to file: ${err.message}`));
+    });
+
+    csv({ delimiter: ';' })
+      .fromStream(readStream)
+      .subscribe(
+        (jsonObj) => {
+          const transformedObj = {
+            book: jsonObj.Book,
+            author: jsonObj.Author,
+            price: parseFloat(jsonObj.Price.replace(',', '.')),
+          };
+
+          writeStream.write(`${JSON.stringify(transformedObj)}\n`);
+        },
+        (err) => {
+          reject(new Error(`Failed to parse CSV: ${err.message}`));
+        },
+        () => {
+          writeStream.end();
+          resolve(true);
+        },
+      );
+
+    readStream.on('error', (err) => {
+      reject(new Error(`Failed to read file: ${err.message}`));
+    });
+  });

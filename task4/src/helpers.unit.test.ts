@@ -1,5 +1,6 @@
 import { SUPPORTED_COUNTRIES } from './config';
-import { validateInput } from './helpers';
+import { shortenPublicHoliday, validateInput } from './helpers';
+import { PublicHoliday, PublicHolidayShort } from './types';
 
 describe('validateYear', () => {
   const currentYear = new Date().getFullYear();
@@ -20,5 +21,29 @@ describe('validateYear', () => {
   it('should throw an error if the country is not supported', () => {
     const example = { year: currentYear, country: unsupportedCountry };
     expect(() => validateInput(example)).toThrow(/Country provided is not supported/);
+  });
+});
+
+describe('shortenPublicHoliday', () => {
+  it('should return a shortened holiday object', () => {
+    const holiday: PublicHoliday = {
+      date: '2025-12-25',
+      name: 'Christmas Day',
+      localName: 'Weihnachtstag',
+      countryCode: 'DE',
+      fixed: true,
+      global: true,
+      counties: ['HU', 'FR'],
+      launchYear: 2015,
+      types: ['hello', 'world'],
+    };
+
+    const expectedOutput: PublicHolidayShort = {
+      name: 'Christmas Day',
+      localName: 'Weihnachtstag',
+      date: '2025-12-25',
+    };
+
+    expect(shortenPublicHoliday(holiday)).toEqual(expectedOutput);
   });
 });

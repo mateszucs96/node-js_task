@@ -1,7 +1,7 @@
 import { SUPPORTED_COUNTRIES } from '../config';
 import { checkIfTodayIsPublicHoliday, getListOfPublicHolidays, getNextPublicHolidays } from './public-holidays.service';
 
-describe('Integration: public-holidays.service.ts', () => {
+describe('Integration', () => {
   const currentYear = new Date().getFullYear();
   const validCountry = SUPPORTED_COUNTRIES[0];
 

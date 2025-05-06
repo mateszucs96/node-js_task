@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "test": "jest test/index.test.ts",
-    "test:integ": "jest services/public-holidays.service.integration.test.ts",
+    "test:unit": "jest --testPathPattern=\\.unit\\.test\\.ts$",
+    "test:integration": "jest --testPathPattern=\\.integration\\.test\\.ts$",
+    "test:e2e": "jest e2e",
     "coverage": "jest --coverage --coverageReporters=cobertura --coverageDirectory=.",
     "lint": "./node_modules/.bin/eslint .",
     "lint:fix": "npm run lint --fix"

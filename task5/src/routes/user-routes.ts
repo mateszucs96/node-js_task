@@ -1,0 +1,15 @@
+/* eslint-disable consistent-return */
+import { IncomingMessage, ServerResponse } from 'http';
+import { handleCreateUser } from '../controllers/user-controller';
+import { USERS_API_URL } from '../test/constants';
+
+export const routeRequest = async (req: IncomingMessage, res: ServerResponse<IncomingMessage>) => {
+  const url = new URL(req.url || '', `http://${req.headers.host}`);
+  const { method } = req;
+  const path = url.pathname;
+  if (method === 'POST' && path === USERS_API_URL) {
+    return handleCreateUser(req, res);
+  }
+  res.writeHead(404);
+  res.end('Not Found');
+};

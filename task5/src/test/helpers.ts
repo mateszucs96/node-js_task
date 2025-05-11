@@ -1,4 +1,6 @@
+/* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable import/no-extraneous-dependencies */
+import { IncomingMessage } from 'http';
 import Joi from 'joi';
 import { USERS_API_URL } from './constants';
 import { User } from '../types/user';
@@ -45,3 +47,20 @@ export const getUsersResponseSchema = Joi.object({
   data: Joi.array().items(userSchema),
   error: Joi.allow(null),
 });
+
+export const parseRequestBody = (req: IncomingMessage): Promise<unknown> =>
+  new Promise((resolve, reject) => {
+    let body = '';
+
+    req.on('data', (chunk) => {
+      body += chunk.toString();
+    });
+
+    req.on('end', () => {
+      resolve(JSON.parse(body));
+    });
+
+    req.on('error', (error: Error) => {
+      reject(error);
+    });
+  });

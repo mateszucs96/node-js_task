@@ -1,9 +1,17 @@
+/* eslint-disable object-curly-newline */
 /* eslint-disable consistent-return */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable max-len */
 import http, { IncomingMessage, ServerResponse } from 'http';
-import { createUser } from '../services/user-service';
-import { parseRequestBody, userInputSchema, userSchema } from '../test/helpers';
+import { createUser, getUsers } from '../services/user-service';
+import {
+  buildUserResponse,
+  getUsersResponseSchema,
+  parseRequestBody,
+  userInputSchema,
+  userSchema,
+  validateUser,
+} from '../test/helpers';
 import { USERS_API_URL } from '../test/constants';
 import { UserResponse } from '../types/user';
 
@@ -44,4 +52,21 @@ export const handleCreateUser = async (req: IncomingMessage, res: ServerResponse
     res.writeHead(400, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: (err as Error).message }));
   }
+};
+
+export const handleGetUsers = (req: IncomingMessage, res: ServerResponse<http.IncomingMessage>) => {
+  const response = {
+    data: getUsers().map(buildUserResponse),
+    error: null,
+  };
+
+  const { error } = getUsersResponseSchema.validate(response);
+
+  if (error) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ error: 'Internal response validation failed' }));
+  }
+
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  return res.end(JSON.stringify(response));
 };

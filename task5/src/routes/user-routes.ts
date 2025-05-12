@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 import { IncomingMessage, ServerResponse } from 'http';
-import { handleCreateUser } from '../controllers/user-controller';
+import { handleCreateUser, handleGetUsers } from '../controllers/user-controller';
 import { USERS_API_URL } from '../test/constants';
 
 export const routeRequest = async (req: IncomingMessage, res: ServerResponse<IncomingMessage>) => {
@@ -9,6 +9,9 @@ export const routeRequest = async (req: IncomingMessage, res: ServerResponse<Inc
   const path = url.pathname;
   if (method === 'POST' && path === USERS_API_URL) {
     return handleCreateUser(req, res);
+  }
+  if (method === 'GET' && path === USERS_API_URL) {
+    return handleGetUsers(req, res);
   }
   res.writeHead(404);
   res.end('Not Found');

@@ -47,32 +47,3 @@ export const getUsersResponseSchema = Joi.object({
   data: Joi.array().items(userSchema),
   error: Joi.allow(null),
 });
-
-export const parseRequestBody = (req: IncomingMessage): Promise<unknown> =>
-  new Promise((resolve, reject) => {
-    let body = '';
-
-    req.on('data', (chunk) => {
-      body += chunk.toString();
-    });
-
-    req.on('end', () => {
-      resolve(JSON.parse(body));
-    });
-
-    req.on('error', (error: Error) => {
-      reject(error);
-    });
-  });
-
-export const buildUserResponse = (user: User) => ({
-  user: {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-  },
-  links: {
-    self: `/api/users/${user.id}`,
-    hobbies: `/api/users/${user.id}/hobbies`,
-  },
-});

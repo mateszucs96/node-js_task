@@ -4,16 +4,11 @@
 /* eslint-disable max-len */
 import http, { IncomingMessage, ServerResponse } from 'http';
 import { createUser, getUsers } from '../services/user-service';
-import {
-  buildUserResponse,
-  getUsersResponseSchema,
-  parseRequestBody,
-  userInputSchema,
-  userSchema,
-  validateUser,
-} from '../test/helpers';
+import { getUsersResponseSchema, userInputSchema, userSchema } from '../test/helpers';
 import { USERS_API_URL } from '../test/constants';
 import { UserResponse } from '../types/user';
+import { parseRequestBody } from '../utils/parseRequestBody';
+import { buildUserResponse } from '../utils/buildUserResponse';
 
 export const handleCreateUser = async (req: IncomingMessage, res: ServerResponse<http.IncomingMessage>) => {
   try {

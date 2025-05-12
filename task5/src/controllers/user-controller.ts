@@ -3,10 +3,10 @@
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable max-len */
 import http, { IncomingMessage, ServerResponse } from 'http';
-import { createUser, getUsers } from '../services/user-service';
+import { createUser, deleteUser, getUsers } from '../services/user-service';
 import { getUsersResponseSchema, userInputSchema, userSchema } from '../test/helpers';
 import { USERS_API_URL } from '../test/constants';
-import { User, UserResponse, UsersResponse } from '../types/user';
+import { UserResponse, UsersResponse } from '../types/user';
 import { parseRequestBody } from '../utils/parseRequestBody';
 import { buildUserResponse } from '../utils/buildUserResponse';
 import { sendError, sendJSON } from '../utils/sendJson';
@@ -16,7 +16,7 @@ export const handleCreateUser = async (req: IncomingMessage, res: ServerResponse
     const result = await parseRequestBody(req);
     const { error, value } = userInputSchema.validate(result);
     if (error) {
-      sendError(res, 400, error.message);
+      return sendError(res, 400, error.message);
     }
 
     const newUser = createUser(value);
@@ -37,9 +37,9 @@ export const handleCreateUser = async (req: IncomingMessage, res: ServerResponse
     if (responseError) {
       sendError(res, 500, 'Internal Server Error');
     }
-    sendJSON<UserResponse>(res, 200, response);
+    return sendJSON<UserResponse>(res, 200, response);
   } catch (err) {
-    sendError(res, 400, (err as Error).message);
+    return sendError(res, 400, (err as Error).message);
   }
 };
 
@@ -52,7 +52,21 @@ export const handleGetUsers = (req: IncomingMessage, res: ServerResponse<http.In
   const { error } = getUsersResponseSchema.validate(response);
 
   if (error) {
-    sendError(res, 500, 'Internal response validation failed');
+    return sendError(res, 500, 'Internal response validation failed');
   }
-  sendJSON<UsersResponse>(res, 200, response);
+  return sendJSON<UsersResponse>(res, 200, response);
+};
+
+export const handleDeleteUser = (req: IncomingMessage, res: ServerResponse<http.IncomingMessage>, idParam: string) => {
+  const deleted = deleteUser(idParam);
+
+  if (!deleted) {
+    return sendError(res, 404, 'User not found');
+  }
+
+  const response = {
+    data: { success: true },
+    error: null,
+  };
+  return sendJSON(res, 200, response);
 };

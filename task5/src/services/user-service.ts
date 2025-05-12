@@ -4,7 +4,7 @@ import { users } from '../data/users';
 import { validateUser } from '../test/helpers';
 
 type UserData = Omit<User, 'id'>;
-const USERS = [...users];
+let USERS = [...users];
 
 export const createUser = (user: UserData) => {
   const newUser: User = { id: uuidv4(), ...user };
@@ -13,3 +13,9 @@ export const createUser = (user: UserData) => {
 };
 
 export const getUsers = () => USERS.map((user) => user);
+
+export const deleteUser = (id: string) => {
+  const originalLength = USERS.length;
+  USERS = USERS.filter((user) => user.id !== id);
+  return USERS.length < originalLength;
+};

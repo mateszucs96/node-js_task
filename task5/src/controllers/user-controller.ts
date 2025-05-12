@@ -6,18 +6,17 @@ import http, { IncomingMessage, ServerResponse } from 'http';
 import { createUser, getUsers } from '../services/user-service';
 import { getUsersResponseSchema, userInputSchema, userSchema } from '../test/helpers';
 import { USERS_API_URL } from '../test/constants';
-import { UserResponse } from '../types/user';
+import { User, UserResponse, UsersResponse } from '../types/user';
 import { parseRequestBody } from '../utils/parseRequestBody';
 import { buildUserResponse } from '../utils/buildUserResponse';
+import { sendError, sendJSON } from '../utils/sendJson';
 
 export const handleCreateUser = async (req: IncomingMessage, res: ServerResponse<http.IncomingMessage>) => {
   try {
     const result = await parseRequestBody(req);
     const { error, value } = userInputSchema.validate(result);
     if (error) {
-      console.error('Validation failed:', error.details);
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ error: error.message }));
+      sendError(res, 400, error.message);
     }
 
     const newUser = createUser(value);
@@ -36,21 +35,16 @@ export const handleCreateUser = async (req: IncomingMessage, res: ServerResponse
 
     const { error: responseError } = userSchema.validate(response);
     if (responseError) {
-      console.error('Invalid response shape:', responseError.details);
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ error: 'Internal Server Error' }));
+      sendError(res, 500, 'Internal Server Error');
     }
-
-    res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(response));
+    sendJSON<UserResponse>(res, 200, response);
   } catch (err) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: (err as Error).message }));
+    sendError(res, 400, (err as Error).message);
   }
 };
 
 export const handleGetUsers = (req: IncomingMessage, res: ServerResponse<http.IncomingMessage>) => {
-  const response = {
+  const response: UsersResponse = {
     data: getUsers().map(buildUserResponse),
     error: null,
   };
@@ -58,10 +52,7 @@ export const handleGetUsers = (req: IncomingMessage, res: ServerResponse<http.In
   const { error } = getUsersResponseSchema.validate(response);
 
   if (error) {
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    return res.end(JSON.stringify({ error: 'Internal response validation failed' }));
+    sendError(res, 500, 'Internal response validation failed');
   }
-
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  return res.end(JSON.stringify(response));
+  sendJSON<UsersResponse>(res, 200, response);
 };

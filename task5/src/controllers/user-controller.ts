@@ -3,10 +3,10 @@
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable max-len */
 import http, { IncomingMessage, ServerResponse } from 'http';
-import { createUser, deleteUser, getUsers } from '../services/user-service';
+import { createUser, deleteUser, getHobbiesForUser, getUsers } from '../services/user-service';
 import { getUsersResponseSchema, userInputSchema, userSchema } from '../test/helpers';
 import { USERS_API_URL } from '../test/constants';
-import { UserResponse, UsersResponse } from '../types/user';
+import { HobbiesResponse, UserResponse, UsersResponse } from '../types/user';
 import { parseRequestBody } from '../utils/parseRequestBody';
 import { buildUserResponse } from '../utils/buildUserResponse';
 import { sendError, sendJSON } from '../utils/sendJson';
@@ -61,7 +61,10 @@ export const handleDeleteUser = (req: IncomingMessage, res: ServerResponse<http.
   const deleted = deleteUser(idParam);
 
   if (!deleted) {
-    return sendError(res, 404, 'User not found');
+    return sendJSON(res, 404, {
+      data: null,
+      error: `User with id ${idParam} doesn't exist`,
+    });
   }
 
   const response = {
@@ -69,4 +72,28 @@ export const handleDeleteUser = (req: IncomingMessage, res: ServerResponse<http.
     error: null,
   };
   return sendJSON(res, 200, response);
+};
+
+export const handleGetHobbies = (req: IncomingMessage, res: ServerResponse<http.IncomingMessage>, idParam: string) => {
+  const hobbies = getHobbiesForUser(idParam);
+
+  if (hobbies === null) {
+    return sendJSON(res, 404, {
+      data: null,
+      error: `User with id ${idParam} doesn't exist`,
+    });
+  }
+
+  const response = {
+    data: {
+      hobbies,
+      links: {
+        self: `${USERS_API_URL}/${idParam}/hobbies`,
+        user: `${USERS_API_URL}/${idParam}`,
+      },
+    },
+    error: null,
+  };
+
+  return sendJSON<{ data: HobbiesResponse; error: null }>(res, 200, response);
 };

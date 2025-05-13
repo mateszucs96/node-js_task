@@ -12,10 +12,16 @@ export const createUser = (user: UserData) => {
   return newUser;
 };
 
-export const getUsers = () => USERS.map((user) => user);
+export const getUsers = () => [...USERS];
 
 export const deleteUser = (id: string) => {
   const originalLength = USERS.length;
   USERS = USERS.filter((user) => user.id !== id);
   return USERS.length < originalLength;
+};
+
+export const getHobbiesForUser = (id: string) => {
+  const user = USERS.find((u) => u.id === id);
+
+  return user ? user.hobbies || [] : null;
 };

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '../types/user';
+import { Hobbies, User } from '../types/user';
 import { users } from '../data/users';
 import { validateUser } from '../test/helpers';
 
@@ -24,4 +24,12 @@ export const getHobbiesForUser = (id: string) => {
   const user = USERS.find((u) => u.id === id);
 
   return user ? user.hobbies || [] : null;
+};
+
+// eslint-disable-next-line consistent-return
+export const updateUserHobbies = (id: string, hobbies: Hobbies) => {
+  const user = USERS.find((u) => u.id === id);
+  if (!user) return false;
+  user.hobbies = hobbies;
+  return true;
 };

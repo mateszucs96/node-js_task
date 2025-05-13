@@ -2,9 +2,9 @@
 /* eslint-disable consistent-return */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable max-len */
-import http, { IncomingMessage, ServerResponse } from 'http';
-import { createUser, deleteUser, getHobbiesForUser, getUsers } from '../services/user-service';
-import { getUsersResponseSchema, userInputSchema, userSchema } from '../test/helpers';
+import http, { IncomingMessage, ServerResponse, validateHeaderName } from 'http';
+import { createUser, deleteUser, getHobbiesForUser, getUsers, updateUserHobbies } from '../services/user-service';
+import { getUsersResponseSchema, userInputSchema, userSchema, validateHobbies } from '../test/helpers';
 import { USERS_API_URL } from '../test/constants';
 import { HobbiesResponse, UserResponse, UsersResponse } from '../types/user';
 import { parseRequestBody } from '../utils/parseRequestBody';
@@ -96,4 +96,31 @@ export const handleGetHobbies = (req: IncomingMessage, res: ServerResponse<http.
   };
 
   return sendJSON<{ data: HobbiesResponse; error: null }>(res, 200, response);
+};
+
+export const handlePatchUserHobbies = async (
+  req: IncomingMessage,
+  res: ServerResponse<http.IncomingMessage>,
+  idParam: string,
+) => {
+  let body: unknown;
+  try {
+    body = await parseRequestBody(req);
+  } catch {
+    return sendError(res, 400, 'Invalid JSON');
+  }
+
+  const hobbies = (body as { hobbies: unknown })?.hobbies;
+  if (!Array.isArray(hobbies) || !hobbies.every((h) => typeof h === 'string')) {
+    return sendError(res, 400, 'Invalid hobbies format');
+  }
+
+  const updated = updateUserHobbies(idParam, hobbies);
+  if (!updated) {
+    return sendJSON(res, 404, {
+      data: null,
+      error: `User with id ${idParam} doesn't exist`,
+    });
+  }
+  return sendJSON(res, 200, 'Hobbies updated successfully');
 };

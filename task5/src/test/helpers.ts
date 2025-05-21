@@ -40,7 +40,9 @@ export const userSchema = Joi.object({
 export const userInputSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
-  hobbies: Joi.array().items(Joi.string()).required(),
+  // eslint-disable-next-line max-len
+  // changed to optional, based task description it could be an empty array so i assume it shouldn't be required
+  hobbies: Joi.array().items(Joi.string()).optional(),
 });
 
 export const getUsersResponseSchema = Joi.object({

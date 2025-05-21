@@ -30,6 +30,12 @@ export const getHobbiesForUser = (id: string) => {
 export const updateUserHobbies = (id: string, hobbies: Hobbies) => {
   const user = USERS.find((u) => u.id === id);
   if (!user) return false;
-  user.hobbies = hobbies;
+
+  const currentHobbies = user.hobbies ?? [];
+
+  // Merge and remove duplicates using a Set
+  const updatedHobbies = [...new Set([...currentHobbies, ...hobbies])];
+
+  user.hobbies = updatedHobbies;
   return true;
 };

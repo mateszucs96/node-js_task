@@ -4,7 +4,7 @@
 /* eslint-disable max-len */
 import http, { IncomingMessage, ServerResponse, validateHeaderName } from 'http';
 import { createUser, deleteUser, getHobbiesForUser, getUsers, updateUserHobbies } from '../services/user-service';
-import { getUsersResponseSchema, userInputSchema, userSchema, validateHobbies } from '../test/helpers';
+import { getUsersResponseSchema, userInputSchema, userSchema, validateHobbies, validateUser } from '../test/helpers';
 import { USERS_API_URL } from '../test/constants';
 import { HobbiesResponse, UserResponse, UsersResponse } from '../types/user';
 import { parseRequestBody } from '../utils/parseRequestBody';
@@ -13,9 +13,13 @@ import { sendError, sendJSON } from '../utils/sendJson';
 
 export const handleCreateUser = async (req: IncomingMessage, res: ServerResponse<http.IncomingMessage>) => {
   try {
-    const result = await parseRequestBody(req);
+    const result = (await parseRequestBody(req)) as { name: string; email: string; hobbies: string[] };
+
     const { error, value } = userInputSchema.validate(result);
     if (error) {
+      console.log(error); // Log the full error object
+      console.log(error.message); // Log just the message
+      // The problem is here
       return sendError(res, 400, error.message);
     }
 
@@ -35,11 +39,13 @@ export const handleCreateUser = async (req: IncomingMessage, res: ServerResponse
 
     const { error: responseError } = userSchema.validate(response);
     if (responseError) {
-      sendError(res, 500, 'Internal Server Error');
+      return sendError(res, 500, 'Internal Server Error');
     }
-    return sendJSON<UserResponse>(res, 200, response);
+
+    return sendJSON(res, 201, { data: response, error: null });
   } catch (err) {
-    return sendError(res, 400, (err as Error).message);
+    // Handle unexpected errors
+    return sendError(res, 400, '(err as Error).message');
   }
 };
 
@@ -54,6 +60,7 @@ export const handleGetUsers = (req: IncomingMessage, res: ServerResponse<http.In
   if (error) {
     return sendError(res, 500, 'Internal response validation failed');
   }
+  res.setHeader('Cache-Control', 'public, max-age=3600');
   return sendJSON<UsersResponse>(res, 200, response);
 };
 
@@ -94,7 +101,7 @@ export const handleGetHobbies = (req: IncomingMessage, res: ServerResponse<http.
     },
     error: null,
   };
-
+  res.setHeader('Cache-Control', 'private, max-age=3600');
   return sendJSON<{ data: HobbiesResponse; error: null }>(res, 200, response);
 };
 

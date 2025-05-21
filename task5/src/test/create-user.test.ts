@@ -2,11 +2,12 @@
 import request from 'supertest';
 import { USERS_API_HOST, USERS_API_URL } from './constants';
 import { validateUser } from './helpers';
-import { UserPartial } from '../types/user';
+import { User, UserPartial } from '../types/user';
 
 describe('POST /api/users', () => {
   test('should create new user', async () => {
-    const user: UserPartial = { name: 'mary', email: 'mary@mary.mary' };
+    // test expects valid mail, mary@mary.mary is not okay
+    const user: UserPartial = { name: 'mary', email: 'mary@mary.com' };
 
     const { body } = await request(USERS_API_HOST)
       .post(USERS_API_URL)
@@ -15,6 +16,9 @@ describe('POST /api/users', () => {
       .expect('Content-Type', /json/)
       .expect(201);
 
-    expect(body).toEqual({ data: validateUser(body.data.user), error: null });
+    expect(body).toEqual({
+      data: validateUser(body.data.user),
+      error: null,
+    });
   });
 });

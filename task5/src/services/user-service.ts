@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Hobbies, User } from '../types/user';
 import { users } from '../data/users';
-import { validateUser } from '../test/helpers';
 
 type UserData = Omit<User, 'id'>;
 let USERS = [...users];
@@ -33,7 +32,6 @@ export const updateUserHobbies = (id: string, hobbies: Hobbies) => {
 
   const currentHobbies = user.hobbies ?? [];
 
-  // Merge and remove duplicates using a Set
   const updatedHobbies = [...new Set([...currentHobbies, ...hobbies])];
 
   user.hobbies = updatedHobbies;

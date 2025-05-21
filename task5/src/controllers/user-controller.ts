@@ -17,9 +17,6 @@ export const handleCreateUser = async (req: IncomingMessage, res: ServerResponse
 
     const { error, value } = userInputSchema.validate(result);
     if (error) {
-      console.log(error); // Log the full error object
-      console.log(error.message); // Log just the message
-      // The problem is here
       return sendError(res, 400, error.message);
     }
 
@@ -44,7 +41,6 @@ export const handleCreateUser = async (req: IncomingMessage, res: ServerResponse
 
     return sendJSON(res, 201, { data: response, error: null });
   } catch (err) {
-    // Handle unexpected errors
     return sendError(res, 400, '(err as Error).message');
   }
 };

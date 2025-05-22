@@ -22,3 +22,5 @@ export const products: ProductEntity[] = [
     price: 50,
   },
 ];
+
+export const PRODUCTS: ProductEntity[] = [...products];

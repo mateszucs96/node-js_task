@@ -43,6 +43,12 @@ export const productSchema = Joi.object({
   price: Joi.number().required(),
 });
 
+export const productInputSchema = Joi.object({
+  title: Joi.string().required(),
+  description: Joi.string().required(),
+  price: Joi.number().required(),
+});
+
 export const productsResponseSchema = Joi.object({
   data: Joi.array().items(productSchema),
 });

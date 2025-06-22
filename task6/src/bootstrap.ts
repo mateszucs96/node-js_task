@@ -3,14 +3,16 @@ import bodyParser from 'body-parser';
 import { Socket } from 'net';
 import { Server } from 'http';
 import { requestLogger } from './middlewares/request-logger';
-import { getAllProducts } from './controllers/product.controller';
+
+import productRouter from './routes/product.routes';
+import { PRODUCTS_API_URL } from './test/helpers/constants';
 
 export const app = express();
 
 app.use(bodyParser.json());
 app.use(requestLogger);
 
-app.use('/api/products', getAllProducts);
+app.use(PRODUCTS_API_URL, productRouter);
 
 /**
  * TODO: Module 10 - Production-Ready Node.js Applications

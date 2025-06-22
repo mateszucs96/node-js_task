@@ -15,7 +15,7 @@ export const findProductById = (id: string) => {
   return product;
 };
 
-export const updateProcut = (id: string, productForUpdate: ProductEntity) => {
+export const updateProduct = (id: string, productForUpdate: ProductEntity) => {
   const productIdx = PRODUCTS.findIndex((el) => el.id === id);
   if (productIdx === -1) return null;
 
@@ -27,4 +27,12 @@ export const updateProcut = (id: string, productForUpdate: ProductEntity) => {
   PRODUCTS[productIdx] = updatedProduct;
 
   return updatedProduct;
+};
+
+export const deleteProduct = (id: string) => {
+  const index = PRODUCTS.findIndex((product) => product.id === id);
+  if (index === -1) return false;
+
+  PRODUCTS.splice(index, 1);
+  return true;
 };

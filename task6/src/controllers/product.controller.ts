@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
-import { getProducts, makeProduct, findProductById } from '../services/product.service';
+// eslint-disable-next-line object-curly-newline
+import { getProducts, makeProduct, findProductById, updateProduct } from '../services/product.service';
 
 export const getAllProducts = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -34,6 +35,21 @@ export const findProduct = async (req: Request, res: Response, next: NextFunctio
     if (!product) return res.status(404).send({ error: 'Product not found' });
 
     return res.status(200).send({ data: product });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// eslint-disable-next-line consistent-return
+export const updateProcutById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+
+    const updatedProduct = await updateProduct(id, req.body);
+
+    if (!updatedProduct) return res.status(404).send({ error: 'Product not found' });
+
+    return res.status(200).send({ data: updatedProduct });
   } catch (err) {
     next(err);
   }

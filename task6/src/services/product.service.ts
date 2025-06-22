@@ -7,3 +7,6 @@ export const getProducts = async () => productRepo.getAllProducts();
 export const makeProduct = async (product: ProductEntity) => productRepo.createProduct(product);
 
 export const findProductById = async (id: string) => productRepo.findProductById(id);
+
+// eslint-disable-next-line max-len
+export const updateProduct = async (id: string, product: ProductEntity) => productRepo.updateProcut(id, product);

@@ -23,7 +23,7 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
   } catch (err) {
     next(err);
   }
-};
+}
 
 // eslint-disable-next-line consistent-return
 export const findProduct = async (req: Request, res: Response, next: NextFunction) => {

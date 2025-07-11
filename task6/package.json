@@ -5,8 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "start:dev": "nodemon ./src/server.ts",
-    "start": "npm run build && ./node_modules/.bin/pm2 start ./dist/src/server.js --name node-js-express-application",
-    "stop": "./node_modules/.bin/pm2 delete node-js-express-application",
+    "start": "npm run build && npx pm2 start ./dist/src/server.js --name node-js-express-application",
+    "stop": "npx pm2 delete node-js-express-application",
+    "seed:products": "ts-node ./src/data/seed-products.ts",
     "build": "mkdir -p dist && cp package.json dist/ && tsc",
     "test": "jest",
     "test:module-6-express-app": "jest --testPathPattern=./src/test/module-6-express-app",
@@ -32,7 +33,7 @@
     "express": "^4.21.2",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.8.4",
+    "mongoose": "^8.16.2",
     "pg": "^8.13.1",
     "uuid": "^9.0.1",
     "winston": "^3.17.0"

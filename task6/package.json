@@ -15,7 +15,7 @@
     "test:module-8-relational-dbs": "jest --testPathPattern=./src/test/module-8-relational-dbs",
     "test:module-9-auth": "jest --testPathPattern=./src/test/module-9-auth",
     "test:module-10-production-ready-app": "jest --testPathPattern=./src/test/module-10-production-ready-app",
-    "pretest": "npm start",
+    "pretest": "ts-node ./src/create-products.ts",
     "posttest": "npm stop",
     "lint": "./node_modules/.bin/eslint .",
     "lint:fix": "npm run lint --fix"

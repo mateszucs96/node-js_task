@@ -1,5 +1,4 @@
-/* import mongoose from 'mongoose';
-import { products } from './products';
+import mongoose from 'mongoose';
 import { ProductEntity } from '../entities/product.entity';
 
 // 1. Define Mongoose schema
@@ -12,4 +11,4 @@ export const productSchema = new mongoose.Schema<ProductEntity>(
   { collection: 'products' },
 );
 
-export const Product = mongoose.model('Product', productSchema); */
+export const Product = mongoose.model('Product', productSchema);

@@ -1,11 +1,16 @@
 version: '3'
 services:
-  mongo:
-    image: "docker.io/mongo:latest"
-    container_name: "nodegmp-nosql"
-    restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=nodegmp
+  mongodb:
+    image: mongo:7.0.4
+    container_name: node-gmp-mongodb-example
     ports:
       - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo_user
+      MONGO_INITDB_ROOT_PASSWORD: mongo_user_password
+      MONGO_INITDB_DATABASE: mongo_db
+    volumes:
+      - mongodb-data:/data/db
+
+volumes:
+  mongodb-data:

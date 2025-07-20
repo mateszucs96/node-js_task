@@ -1,38 +1,15 @@
 import { PRODUCTS } from '../data/products';
 import { ProductEntity } from '../entities/product.entity';
+import { Product } from '../models/project.model';
 
-export const getAllProducts = () => PRODUCTS;
+export const getAllProducts = () => Product.find().lean();
 
-export const createProduct = (product: ProductEntity) => {
-  PRODUCTS.push(product);
+export const createProduct = (product: ProductEntity) => Product.create(product);
 
-  return product;
-};
+export const findProductById = (productId: string) => Product.findById(productId);
 
-export const findProductById = (id: string) => {
-  const product = PRODUCTS.find((el) => el.id === id);
-  if (!product) return null;
-  return product;
-};
+export const updateProduct = (productId: string, productForUpdate: ProductEntity) =>
+  // eslint-disable-next-line implicit-arrow-linebreak
+  Product.findByIdAndUpdate(productId, productForUpdate, { new: true });
 
-export const updateProduct = (id: string, productForUpdate: ProductEntity) => {
-  const productIdx = PRODUCTS.findIndex((el) => el.id === id);
-  if (productIdx === -1) return null;
-
-  const updatedProduct = {
-    ...PRODUCTS[productIdx],
-    ...productForUpdate,
-  };
-
-  PRODUCTS[productIdx] = updatedProduct;
-
-  return updatedProduct;
-};
-
-export const deleteProduct = (id: string) => {
-  const index = PRODUCTS.findIndex((product) => product.id === id);
-  if (index === -1) return false;
-
-  PRODUCTS.splice(index, 1);
-  return true;
-};
+export const deleteProduct = (productId: string) => Product.findByIdAndDelete(productId);

@@ -1,5 +1,5 @@
 import express from 'express';
-import mongoose, { Mongoose } from 'mongoose'
+import mongoose, { Mongoose } from 'mongoose';
 import bodyParser from 'body-parser';
 import { Socket } from 'net';
 import { Server } from 'http';
@@ -7,6 +7,8 @@ import { requestLogger } from './middlewares/request-logger';
 
 import productRouter from './routes/product.routes';
 import { PRODUCTS_API_URL } from './test/helpers/constants';
+
+import { DB_CONNECTION_STRING } from './env/mongodb-connection';
 
 export const app = express();
 
@@ -26,21 +28,20 @@ export const shutdown = (server: Server, connections: Socket[], signal: string) 
 
 const PORT = 8000;
 
-
 /**
  * Initializes and starts the HTTP server, and sets up handling for system signals
  * for graceful shutdown.
  * @returns {Server} The HTTP server instance.
  */
 export const bootstrap = () => {
-  const uri:string = 'mongodb://root:nodegmp@localhost:27017/mydatabase?authSource=admin';
-
-  mongoose.connect(uri).then(async () => {
-    console.log("✅ Successfully connected to MongoDB");
-    
-  }).catch((error: Error) => {
-    console.error(`❌ Error connecting to MongoDB: ${error.message}`);
-  });
+  mongoose
+    .connect(DB_CONNECTION_STRING)
+    .then(async () => {
+      console.log('✅ Successfully connected to MongoDB');
+    })
+    .catch((error: Error) => {
+      console.error(`❌ Error connecting to MongoDB: ${error.message}`);
+    });
 
   const server = app.listen(PORT, () => {
     console.log(`🚀 Server is started on port ${PORT}`);
@@ -49,20 +50,3 @@ export const bootstrap = () => {
   // Add graceful shutdown logic later
   return server;
 };
-
-const test = new mongoose.Schema({
-  name: String,
-  age: Number 
-})
-
-const TestModel = mongoose.model('Test', test);
-
-const addTest = async (testData: { name: string; age: number }) => {
-  try {
-    const test = new TestModel(testData);
-    await test.save();
-    console.log("Test document added:", test);
-  } catch (error) {
-    console.error("Error adding test document:", error);
-  }
-}

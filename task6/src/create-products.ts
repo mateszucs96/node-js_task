@@ -9,11 +9,9 @@ import { DB_CONNECTION_STRING } from './env/mongodb-connection';
     await mongoose.connect(DB_CONNECTION_STRING);
     console.log('Connected to MongoDB');
 
-    // Clean existing products
     await Product.deleteMany({});
     console.log('Cleared existing products');
 
-    // Insert predefined products
     await Product.insertMany(PRODUCTS);
     console.log('Inserted seed products');
   } catch (error) {

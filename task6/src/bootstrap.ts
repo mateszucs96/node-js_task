@@ -1,5 +1,5 @@
 import express from 'express';
-import mongoose, { Mongoose } from 'mongoose';
+import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import { Socket } from 'net';
 import { Server } from 'http';
@@ -47,6 +47,12 @@ export const bootstrap = () => {
     console.log(`🚀 Server is started on port ${PORT}`);
   });
 
-  // Add graceful shutdown logic later
+  // TODO: Module 10 - Production-Ready Node.js Applications
+  // Track new connections to the server
+  // const connections: Socket[] = [];
+
+  // Handle termination signals.
+  // process.on('SIGTERM', () => shutdown(server, connections, 'SIGTERM'));
+  // process.on('SIGINT', () => shutdown(server, connections, 'SIGINT'));
   return server;
 };

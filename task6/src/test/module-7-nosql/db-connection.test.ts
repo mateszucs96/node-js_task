@@ -5,7 +5,10 @@ const COLLECTION_NAME: string = 'products';
 
 describe('Database connection', () => {
   beforeAll(async () => {
-    await mongoose.connect(DB_CONNECTION_STRING, (!DB_CONNECTION_STRING.includes('admin') ? { user: DB_USER, pass: DB_PASSWORD, authSource: 'admin' } : {}));
+    await mongoose.connect(
+      DB_CONNECTION_STRING,
+      !DB_CONNECTION_STRING.includes('admin') ? { user: DB_USER, pass: DB_PASSWORD, authSource: 'admin' } : {},
+    );
   });
 
   afterAll(async () => {

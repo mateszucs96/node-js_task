@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import { Socket } from 'net';
 import { Server } from 'http';
@@ -6,6 +7,8 @@ import { requestLogger } from './middlewares/request-logger';
 
 import productRouter from './routes/product.routes';
 import { PRODUCTS_API_URL } from './test/helpers/constants';
+
+import { DB_CONNECTION_STRING } from './env/mongodb-connection';
 
 export const app = express();
 
@@ -31,8 +34,17 @@ const PORT = 8000;
  * @returns {Server} The HTTP server instance.
  */
 export const bootstrap = () => {
+  mongoose
+    .connect(DB_CONNECTION_STRING)
+    .then(async () => {
+      console.log('✅ Successfully connected to MongoDB');
+    })
+    .catch((error: Error) => {
+      console.error(`❌ Error connecting to MongoDB: ${error.message}`);
+    });
+
   const server = app.listen(PORT, () => {
-    console.log(`Server is started on port ${PORT}`);
+    console.log(`🚀 Server is started on port ${PORT}`);
   });
 
   // TODO: Module 10 - Production-Ready Node.js Applications
@@ -42,6 +54,5 @@ export const bootstrap = () => {
   // Handle termination signals.
   // process.on('SIGTERM', () => shutdown(server, connections, 'SIGTERM'));
   // process.on('SIGINT', () => shutdown(server, connections, 'SIGINT'));
-
   return server;
 };
